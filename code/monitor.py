@@ -1,11 +1,12 @@
 import time
 import RPi.GPIO as gpio
+from lcd1602 import *
 
-chanel = 13
+chanel = 27
 def getvalue(chanel):
 	j = 0
 	data=[]
-	gpio.setmode(gpio.BOARD)
+	gpio.setmode(gpio.BCM)
 	gpio.setwarnings(False)
 
 
@@ -72,10 +73,22 @@ def getresult(chanel):
  
 		tmp=humidity+humidity_point+temperature+temperature_point
 		if check==tmp:
-		    print ("temperature is ", temperature,"wet is ",humidity,"%")
+			return temperature,humidity
+		    # print ("temperature is ", temperature,"wet is ",humidity,"%")
 		else:
 			continue
 		    # print ("something is wrong .humidity:",humidity,"humidity_point:",humidity_point,"temperature:",temperature,"temperature_point:",temperature_point,"check:",check,"tmp:",tmp)
-while (1):
-	getresult(chanel)
-gpio.cleanup()
+
+# First data is data from last time
+getresult(chanel)
+
+lcd = lcd1602()
+lcd.clear()
+if __name__=='__main__':
+	while (1):
+		
+		tem,hum = getresult(chanel)
+		lcd.clear()
+		lcd.message('tem:'+str(tem)+'\nwet:'+str(hum))
+		print ("temperature is ", tem,"wet is ",hum,"%")
+	gpio.cleanup()
